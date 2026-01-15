@@ -30,7 +30,7 @@ export default function ContactForm() {
 
       // Send email using EmailJS
       await emailjs.send(
-        'service_cgk97n3', // Your service ID
+        'service_dqlgygk', // Your service ID
         'template_ehn8lt3', // Replace with your contact form template ID
         templateParams,
         '9udiMyvGD5CMC5-xc' // Replace with your EmailJS public key
