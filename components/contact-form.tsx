@@ -1,9 +1,9 @@
 "use client"
 
 import type React from "react"
-import { supabase } from "@/lib/supabase"
 import { useState } from "react"
 import { Send, CheckCircle, AlertCircle } from "lucide-react"
+import emailjs from 'emailjs-com'
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -20,15 +20,21 @@ export default function ContactForm() {
     setErrorMessage("")
 
     try {
-      const { error } = await supabase.from("contact_submissions").insert([
-        {
-          name: formData.name,
-          email: formData.email,
-          message: formData.message,
-        },
-      ])
+      // Prepare template parameters for EmailJS
+      const templateParams = {
+        from_name: formData.name,
+        from_email: formData.email,
+        message: formData.message,
+        to_email: formData.email, // This will be sent back to the user as confirmation
+      }
 
-      if (error) throw error
+      // Send email using EmailJS
+      await emailjs.send(
+        'service_cgk97n3', // Your service ID
+        'template_ehn8lt3', // Replace with your contact form template ID
+        templateParams,
+        '9udiMyvGD5CMC5-xc' // Replace with your EmailJS public key
+      )
 
       setStatus("success")
       setFormData({ name: "", email: "", message: "" })
@@ -50,7 +56,7 @@ export default function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="space-y-6">
       <div>
         <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
           Your Name
@@ -114,7 +120,7 @@ export default function ContactForm() {
       )}
 
       <button
-        type="submit"
+        onClick={handleSubmit}
         disabled={status === "loading"}
         className="w-full px-8 py-4 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl font-semibold hover:from-teal-600 hover:to-teal-700 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2 group"
       >
@@ -130,6 +136,6 @@ export default function ContactForm() {
           </>
         )}
       </button>
-    </form>
+    </div>
   )
 }
