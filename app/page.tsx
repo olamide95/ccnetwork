@@ -120,13 +120,18 @@ export default function Home() {
                 <div className="grid md:grid-cols-5 gap-8">
                   <div className="md:col-span-2 bg-gradient-to-br from-teal-500 to-teal-600 p-8 flex items-center justify-center">
                     <div className="text-center">
-                      <div className="w-48 h-48 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-6 mx-auto border-4 border-white/40">
-                        <div className="w-40 h-40 bg-gradient-to-br from-teal-300 to-teal-400 rounded-full flex items-center justify-center">
-                          <span className="text-6xl text-white font-bold">CE</span>
-                        </div>
+                      <div className="w-56 h-56 rounded-full mb-6 mx-auto border-4 border-white shadow-2xl overflow-hidden bg-gray-100">
+                        <img 
+                          src="/picture.jpg" 
+                          alt="Chukuma Emefiele - Professional Counsellor"
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                       <h3 className="text-3xl font-bold text-white mb-2">Chukuma Emefiele</h3>
-                      <p className="text-teal-100 text-lg">Professional Counsellor</p>
+                      <p className="text-teal-100 text-lg font-medium">Professional Counsellor</p>
+                      <div className="mt-4 pt-4 border-t border-white/30">
+                        <p className="text-teal-50 text-sm">Faith-Based Mental Health Specialist</p>
+                      </div>
                     </div>
                   </div>
 
