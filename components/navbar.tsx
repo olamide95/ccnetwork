@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Menu, X } from "lucide-react"
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,6 +15,46 @@ export default function Navbar() {
 
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  // Ensure video keeps playing
+  useEffect(() => {
+    if (videoRef.current) {
+      const video = videoRef.current
+      
+      // Force video to play and loop continuously
+      const playVideo = async () => {
+        try {
+          video.loop = true
+          video.muted = true
+          
+          // Force play and keep trying if needed
+          const playAttempt = () => {
+            video.play().catch(error => {
+              console.log("Video play attempt failed, retrying...", error)
+              setTimeout(playAttempt, 1000)
+            })
+          }
+          
+          playAttempt()
+          
+          // Add event listeners to restart if paused
+          video.addEventListener('pause', () => {
+            setTimeout(() => video.play(), 100)
+          })
+          
+          video.addEventListener('ended', () => {
+            video.currentTime = 0
+            video.play()
+          })
+          
+        } catch (error) {
+          console.error("Error with video playback:", error)
+        }
+      }
+      
+      playVideo()
+    }
   }, [])
 
   const navLinks = [
@@ -33,34 +74,52 @@ export default function Navbar() {
       <div className="container mx-auto px-6 md:px-12 lg:px-20">
         <div className="flex items-center justify-between">
           {/* Logo and Site Name */}
-          <a href="#hero" className="flex items-center gap-3 group">
-            {/* Video Logo - Replace src with your actual video path */}
-            <div className="w-12 h-12 rounded-full overflow-hidden shadow-lg group-hover:scale-110 transition-transform flex items-center justify-center bg-gradient-to-br from-teal-500 to-teal-600">
+          <a href="#hero" className="flex items-center gap-4 group">
+            {/* Video Logo - 2x larger (w-24 h-24 instead of w-12 h-12) */}
+            <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg group-hover:scale-105 transition-transform flex items-center justify-center bg-gradient-to-br from-teal-500 to-teal-600">
               <video
+                ref={videoRef}
                 autoPlay
                 loop
                 muted
                 playsInline
+                preload="auto"
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   // Fallback if video doesn't load - shows initials
-                  e.currentTarget.style.display = 'none'
-                  e.currentTarget.nextElementSibling.style.display = 'flex'
+                  const target = e.currentTarget as HTMLVideoElement
+                  target.style.display = 'none'
+                  const fallback = target.nextElementSibling as HTMLDivElement
+                  fallback.style.display = 'flex'
+                }}
+                // Additional event handlers for continuous playback
+                onPause={() => {
+                  const video = e.currentTarget as HTMLVideoElement
+                  if (video.paused) {
+                    setTimeout(() => video.play(), 100)
+                  }
+                }}
+                onEnded={() => {
+                  const video = e.currentTarget as HTMLVideoElement
+                  video.currentTime = 0
+                  video.play()
                 }}
               >
                 <source src="/icon.MP4" type="video/mp4" />
+                <source src="/icon.webm" type="video/webm" />
+                <source src="/icon.ogg" type="video/ogg" />
                 Your browser does not support the video tag.
               </video>
-              <div className="w-full h-full items-center justify-center text-white font-bold text-lg" style={{ display: 'none' }}>
+              <div className="w-full h-full items-center justify-center text-white font-bold text-2xl" style={{ display: 'none' }}>
                 CC
               </div>
             </div>
             
             <div className="flex flex-col">
-              <span className="text-lg md:text-xl font-bold text-gray-800 group-hover:text-teal-600 transition-colors">
+              <span className="text-xl md:text-2xl font-bold text-gray-800 group-hover:text-teal-600 transition-colors">
                 Christ Compassion Network
               </span>
-              <span className="text-xs text-gray-600">International</span>
+              <span className="text-sm text-gray-600">International</span>
             </div>
           </a>
 
